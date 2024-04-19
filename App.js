@@ -10,9 +10,9 @@ import UserRoutes from "./Users/routes.js";
 import session from "express-session";
 import "dotenv/config";
 
-const CONNECTION_STRING = process.env.DB_CONNECTION_STRING;
+const CONNECTION_STRING = process.env.DB_CONNECTION_STRING || 'mongodb://localhost:27017/';
 
-mongoose.connect(CONNECTION_STRING ,{ useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(CONNECTION_STRING);
 const app = express()
 app.use(cors({
     credentials: true,
@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== "development") {
   sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
-    domain: process.env.HTTP_SERVER_DOMAIN,
+    // domain: process.env.HTTP_SERVER_DOMAIN,
   };
 }
 app.use(session(sessionOptions));
