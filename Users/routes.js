@@ -3,6 +3,7 @@ let currentUser = null;
 export default function UserRoutes(app) {
     const createUser = async (req, res) => {
         const user = await dao.createUser(req.body);
+        delete user._id;
         res.json(user);
     };
     const deleteUser = async (req, res) => {
@@ -12,7 +13,7 @@ export default function UserRoutes(app) {
     const findAllUsers = async (req, res) => {
         const { role } = req.query;
         if (role) {
-            const users = await dao.findUsersByRole(role);
+        const users = role ? await dao.findUsersByRole(role) : await dao.findAllUsers();
             res.json(users);
             return;
         }
@@ -64,6 +65,7 @@ export default function UserRoutes(app) {
                 { message: "Username already taken" });
         }
         currentUser = await dao.createUser(req.body);
+        req.session["currentUser"] = currentUser;
         res.json(currentUser);
     };
     
