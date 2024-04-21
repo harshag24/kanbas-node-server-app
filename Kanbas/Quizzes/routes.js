@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/courses/:courseId/quizzes', async (req, res) => {
     try {
         const { courseId } = req.params;
-        const newQuiz = new Quiz({ ...req.body, courseId});
+        const newQuiz = new Quiz({ ...req.body});
         await newQuiz.save();
         res.status(201).json(newQuiz);
     } catch (error) {
