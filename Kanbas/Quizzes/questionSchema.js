@@ -1,4 +1,3 @@
-// src/Kanbas/Quizzes/models/questionModel.js
 import mongoose from 'mongoose';
 
 const questionSchema = new mongoose.Schema({
@@ -10,10 +9,9 @@ const questionSchema = new mongoose.Schema({
   options: [{
     text: String,
     isCorrect: { type: Boolean, default: false }
-  }], // Used for Multiple Choice and True/False types
-  blanks: [String] // Used for Fill in the Blanks type
+  }],
+  blanks: [String]
 }, { timestamps: true });
 
 const Question = mongoose.model('Question', questionSchema);
-
 export default Question;

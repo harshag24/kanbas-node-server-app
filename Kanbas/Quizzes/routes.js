@@ -1,106 +1,63 @@
-import express from 'express';
-import Quiz from './models/quizModel.js';
-import Question from './models/questionModel.js';
+import * as quizDao from './quizDao.js';
+import * as questionDao from './questionDao.js';
 
-const router = express.Router();
-
-// Create a new quiz under a specific course
-router.post('/courses/:courseId/quizzes', async (req, res) => {
-    try {
-        const { courseId } = req.params;
-        const newQuiz = new Quiz({ ...req.body});
-        await newQuiz.save();
+export default function QuizRoutes(app) {
+    const createQuiz = async (req, res) => {
+        const newQuiz = await quizDao.createQuiz({ ...req.body, courseId: req.params.courseId });
         res.status(201).json(newQuiz);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
+    };
 
-// Get all quizzes for a specific course
-router.get('/courses/:courseId/quizzes', async (req, res) => {
-    try {
-        const { courseId } = req.params;
-        const quizzes = await Quiz.find({ courseId }).populate('questions');
+    const getQuizzesByCourseId = async (req, res) => {
+        const quizzes = await quizDao.findQuizzesByCourseId(req.params.courseId);
         res.json(quizzes);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+    };
 
-// Get a single quiz by ID under a specific course
-router.get('/courses/:courseId/quizzes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const quiz = await Quiz.findById(id).populate('questions');
+    const getQuizById = async (req, res) => {
+        const quiz = await quizDao.findQuizById(req.params.id);
         if (!quiz) {
             return res.status(404).send('Quiz not found');
         }
         res.json(quiz);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+    };
 
-// Update a quiz
-router.put('/courses/:courseId/quizzes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updatedQuiz = await Quiz.findByIdAndUpdate(id, req.body, { new: true });
+    const updateQuiz = async (req, res) => {
+        const updatedQuiz = await quizDao.updateQuiz(req.params.id, req.body);
         if (!updatedQuiz) {
             return res.status(404).send('Quiz not found');
         }
         res.json(updatedQuiz);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
+    };
 
-// Delete a quiz
-router.delete('/courses/:courseId/quizzes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Quiz.findByIdAndDelete(id);
-        res.status(204).send();
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+    const deleteQuiz = async (req, res) => {
+        const status = await quizDao.deleteQuiz(req.params.id);
+        res.sendStatus(status ? 204 : 404);
+    };
 
-// Add a question to a quiz
-router.post('/courses/:courseId/quizzes/:quizId/questions', async (req, res) => {
-    try {
-        const { quizId } = req.params;
-        const newQuestion = new Question({ ...req.body, quiz: quizId });
-        await newQuestion.save();
-        await Quiz.findByIdAndUpdate(quizId, { $push: { questions: newQuestion._id } });
+    const createQuestion = async (req, res) => {
+        const newQuestion = await questionDao.createQuestion({ ...req.body, quiz: req.params.quizId });
         res.status(201).json(newQuestion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
+    };
 
-// Update a question
-router.put('/questions/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const updatedQuestion = await Question.findByIdAndUpdate(id, req.body, { new: true });
+    const updateQuestion = async (req, res) => {
+        const updatedQuestion = await questionDao.updateQuestion(req.params.id, req.body);
         if (!updatedQuestion) {
             return res.status(404).send('Question not found');
         }
         res.json(updatedQuestion);
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
+    };
 
-// Delete a question
-router.delete('/questions/:id', async (req, res) => {
-    try {
-        await Question.findByIdAndDelete(req.params.id);
-        res.status(204).send();
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
+    const deleteQuestion = async (req, res) => {
+        const status = await questionDao.deleteQuestion(req.params.id);
+        res.sendStatus(status ? 204 : 404);
+    };
 
-export default router;
+    // Routes setup
+    app.post('/api/courses/:courseId/quizzes', createQuiz);
+    app.get('/api/courses/:courseId/quizzes', getQuizzesByCourseId);
+    app.get('/api/courses/:courseId/quizzes/:id', getQuizById);
+    app.put('/api/courses/:courseId/quizzes/:id', updateQuiz);
+    app.delete('/api/courses/:courseId/quizzes/:id', deleteQuiz);
+    app.post('/api/quizzes/:quizId/questions', createQuestion);
+    app.put('/api/questions/:id', updateQuestion);
+    app.delete('/api/questions/:id', deleteQuestion);
+}
