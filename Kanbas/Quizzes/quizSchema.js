@@ -14,7 +14,7 @@ const quizSchema = new mongoose.Schema({
   dueDate: { type: Date },
   availableDate: { type: Date },
   untilDate: { type: Date },
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Questions' }],
   isPublished: { type: Boolean, default: false },
   courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Courses' }
 }, { timestamps: true });
