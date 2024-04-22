@@ -6,7 +6,7 @@ export const createQuiz = async (quiz) => {
 };
 
 export const findQuizzesByCourseId = async (courseId) => {
-  return await Quiz.findOne({ courseId }).populate('questions');
+  return await Quiz.find({ courseId }).populate('questions');
 };
 
 export const findQuizById = async (id) => {
@@ -18,5 +18,7 @@ export const updateQuiz = async (id, quiz) => {
 };
 
 export const deleteQuiz = async (id) => {
-  return await Quiz.findByIdAndDelete(id);
+  const response = await Quiz.findByIdAndDelete(id);
+  console.log(response);
+  return response ? true : false;
 };

@@ -1,6 +1,7 @@
 import * as quizDao from './quizDao.js';
 import * as questionDao from './questionDao.js';
 import Quiz from './quizSchema.js';
+import Question from './questionSchema.js';
 
 export default function QuizRoutes(app) {
     const createQuiz = async (req, res) => {
@@ -45,8 +46,18 @@ export default function QuizRoutes(app) {
     };
 
     const createQuestion = async (req, res) => {
-        const newQuestion = await questionDao.createQuestion({ ...req.body, quiz: req.params.quizId });
-        res.status(201).json(newQuestion);
+        const { quizId } = req.body;
+        try {
+            const newQuestion = new Question({
+                ...req.body,
+                quizId: req.params.quizId
+            });
+            await newQuestion.save();
+            res.status(201).json(newQuestion);
+        } catch (error) {
+            console.error("Error creating question: ", error);
+            res.status(500).send('Server error');
+        }
     };
 
     const updateQuestion = async (req, res) => {
@@ -62,13 +73,19 @@ export default function QuizRoutes(app) {
         res.sendStatus(status ? 204 : 404);
     };
 
+    const getQuestionsByQuizId = async (req, res) => {
+        const questions = await questionDao.findQuestionsByQuizId(req.params.quizId);
+        res.json(questions);
+    }
+
     // Routes setup
     app.post('/api/courses/:courseId/quizzes', createQuiz);
     app.get('/api/courses/:courseId/quizzes', getQuizzesByCourseId);
     app.get('/api/courses/:courseId/quizzes/:quizId', getQuizById);
     app.put('/api/courses/:courseId/quizzes/:quizId', updateQuiz);
     app.delete('/api/courses/:courseId/quizzes/:quizId', deleteQuiz);
-    app.post('/api/quizzes/:quizId/questions', createQuestion);
-    app.put('/api/questions/:id', updateQuestion);
-    app.delete('/api/questions/:id', deleteQuestion);
+    app.post('/api/courses/:courseId/quizzes/:quizId/questions', createQuestion);
+    app.put('/api/courses/:courseId/quizzes/:quizId/questions/:id', updateQuestion);
+    app.delete('/api/courses/:courseId/quizzes/:quizId/questions/:id', deleteQuestion);
+    app.get('/api/courses/:courseId/quizzes/:quizId/questions', getQuestionsByQuizId);
 }

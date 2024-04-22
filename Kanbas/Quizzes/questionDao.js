@@ -5,7 +5,7 @@ export const createQuestion = async (question) => {
 };
 
 export const findQuestionsByQuizId = async (quizId) => {
-  return await Question.find({ quiz: quizId });
+  return await Question.find({ quizId: quizId });
 };
 
 export const updateQuestion = async (id, question) => {
