@@ -17,7 +17,7 @@ const quizSchema = new mongoose.Schema({
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
   isPublished: { type: Boolean, default: false },
   courseId: { type: String, required: true}
-}, { timestamps: true, collection: 'quizzes'});
+}, { timestamps: true});
 
 const Quiz = mongoose.model('Quiz', quizSchema);
 export default Quiz;
