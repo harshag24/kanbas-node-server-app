@@ -14,10 +14,10 @@ const quizSchema = new mongoose.Schema({
   dueDate: { type: Date },
   availableDate: { type: Date },
   untilDate: { type: Date },
-  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Questions' }],
+  questions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
   isPublished: { type: Boolean, default: false },
-  courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Courses' }
-}, { timestamps: true });
+  courseId: { type: String, required: true}
+}, { timestamps: true, collection: 'quizzes'});
 
 const Quiz = mongoose.model('Quiz', quizSchema);
 export default Quiz;

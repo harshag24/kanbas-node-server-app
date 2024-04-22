@@ -1,11 +1,12 @@
-import Quiz from "./questionSchema.js";
+import Quiz from "./quizSchema.js";
+import Question from "./questionSchema.js";
 
 export const createQuiz = async (quiz) => {
   return await Quiz.create(quiz);
 };
 
 export const findQuizzesByCourseId = async (courseId) => {
-  return await Quiz.find({ courseId }).populate('questions');
+  return await Quiz.findOne({ courseId }).populate('questions');
 };
 
 export const findQuizById = async (id) => {

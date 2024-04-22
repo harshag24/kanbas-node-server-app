@@ -11,7 +11,7 @@ const questionSchema = new mongoose.Schema({
     isCorrect: { type: Boolean, default: false }
   }],
   blanks: [String]
-}, { timestamps: true });
+}, { timestamps: true});
 
 const Question = mongoose.model('Question', questionSchema);
 export default Question;
