@@ -1,6 +1,7 @@
 import model from "./model.js";
 export const createUser = (user) => {
     delete user._id
+    user.id = user.username;
     return model.create(user);
 }
 
